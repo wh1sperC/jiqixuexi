@@ -1,4 +1,3 @@
-# -*- coding:gbk -*-
 # 使用梯度下降方法构建线性回归模型
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,10 +7,10 @@ import chineseize_matplotlib
 # 导入数据
 x = []
 y = []
-with open("./Price/x.txt") as f1:
+with open("./xianxinghuigui/Price/x.txt") as f1:
     for line in f1:
         x.append(int(line))
-with open("./Price/y.txt") as f2:
+with open("./xianxinghuigui/Price/y.txt") as f2:
     for line in f2:
         y.append(float(line))
 print('x=', x)
