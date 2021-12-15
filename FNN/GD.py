@@ -16,6 +16,7 @@ y_path1='./FNN/Exam/train/y.txt'
 y_path2='./FNN/Iris/train/y.txt'
 data1=load_data(x_path1,2)
 data2=load_data(x_path2,2)
-label1=load_data(y_path1,1)
-label2=load_data(y_path2,1)
+label1=load_data(y_path1,2)
+label2=load_data(y_path2,2)
 print(data1)
+print(label1)
