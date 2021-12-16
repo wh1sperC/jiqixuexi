@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import chineseize_matplotlib
-from numpy.lib.npyio import load
 
 
 # 加载数据
@@ -20,3 +19,10 @@ label1=load_data(y_path1,2)
 label2=load_data(y_path2,2)
 print(data1)
 print(label1)
+
+# 定义神经网络的组成
+class FNN:
+    def __init__(self,sizes):
+        self.layer_nums=len(sizes)
+        self.sizes=sizes
+        
