@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import chineseize_matplotlib
+import random
 
 
 # 加载数据
@@ -28,4 +29,8 @@ class FNN:
         self.sizes=sizes
         self.bayes=[np.random.randn(i,f) for i in sizes[1:]] #获取每层贝叶斯偏置
         self.weights=[np.random.randn(i,j) for i,j in zip(sizes[1:],sizes[:-1])]
-        
+    
+    # 定义梯度下降函数
+    def gd(self,iters):
+        for j in range(iters):
+            pass
