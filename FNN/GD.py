@@ -28,7 +28,11 @@ class FNN:
         self.layer_nums=len(sizes) #获取网络层数
         self.sizes=sizes
         self.bayes=[np.random.randn(i,f) for i in sizes[1:]] #获取每层贝叶斯偏置
-        self.weights=[np.random.randn(i,j) for i,j in zip(sizes[1:],sizes[:-1])]
+        self.weights=[np.random.randn(i,j) for i,j in zip(sizes[1:],sizes[:-1])] #获取每一层的权重
+    
+    # 定义激活函数，这里使用sigmoid
+    def sigmoid(self,x):
+        return 1.0/(1.0+np.exp(-x))
     
     # 定义梯度下降函数
     def gd(self,iters):
