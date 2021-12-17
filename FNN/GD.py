@@ -24,10 +24,10 @@ print(label1)
 # 定义神经网络的组成
 class FNN:
     #初始化网络结构，其中sizes是[输入层，任意多隐藏层，输出层]的节点数的列表，f是我们需要训练的数据的特征数
-    def __init__(self,sizes,f): 
+    def __init__(self,sizes): 
         self.layer_nums=len(sizes) #获取网络层数
         self.sizes=sizes
-        self.bayes=[np.random.randn(i,f) for i in sizes[1:]] #获取每层贝叶斯偏置
+        self.bayes=[np.random.randn(i,1) for i in sizes[1:]] #获取每层贝叶斯偏置
         self.weights=[np.random.randn(i,j) for i,j in zip(sizes[1:],sizes[:-1])] #获取每一层的权重
     
     # 定义激活函数，这里使用sigmoid
@@ -38,3 +38,10 @@ class FNN:
     def gd(self,iters):
         for j in range(iters):
             pass
+
+if __name__ == '__main__':
+    net=FNN([3,2,1])
+    print(net.layer_nums)
+    print(net.sizes)
+    print(net.bayes)
+    print(net.weights)
