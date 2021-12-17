@@ -19,7 +19,7 @@ class FNN:
         self.layer_nums=len(sizes) #获取网络层数
         self.sizes=sizes
         self.bayes=[np.random.rand(i,1) for i in sizes[1:]] #获取每层贝叶斯偏置
-        self.weights=[np.random.rand(i,j,f) for i,j in zip(sizes[1:],sizes[:-1])] #获取每一层的权重
+        self.weights=[np.random.rand(i,j) for i,j in zip(sizes[1:],sizes[:-1])] #获取每一层的权重
     
     # 定义激活函数，这里使用sigmoid
     def sigmoid(self,x):
@@ -31,19 +31,23 @@ class FNN:
             pass
 
 if __name__ == '__main__':
-    '''x_path1='./FNN/Exam/train/x.txt'
+    x_path1='./FNN/Exam/train/x.txt'
     x_path2='./FNN/Iris/train/x.txt'
     y_path1='./FNN/Exam/train/y.txt'
     y_path2='./FNN/Iris/train/y.txt'
-    data1=load_data(x_path1,2)
-    data2=load_data(x_path2,2)
-    label1=load_data(y_path1,2)
-    label2=load_data(y_path2,2)
-    print(data1)
-    print(label1)'''
-    net=FNN([3,2,1],2)
+    x1=load_data(x_path1,2)
+    x2=load_data(x_path2,2)
+    y1=load_data(y_path1,2)
+    y2=load_data(y_path2,2)
+    print(x1.T)
+    #print(y1.T)
+    print(x1.shape)
+    net=FNN([x1.shape[0],2,x1.shape[0]],x1.shape[1])
     print(net.layer_nums)
     print(net.sizes)
     print(net.bayes)
     print(net.weights)
+    #print(net.weights[0])
     #print(np.random.randn(1,2,2))
+    print(np.matmul(net.weights[0],x1))
+    print(np.shape(np.matmul(net.weights[0],x1)))
