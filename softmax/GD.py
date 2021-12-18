@@ -21,13 +21,13 @@ def calError(h, label, type):
     return ans
 
 def loadTrainSet():
-    f = open('Iris/train/x.txt')
+    f = open('./softmax/Iris/train/x.txt')
     data = []
     for line in f:
         lineArr = line.strip().split()
         data.append([float(lineArr[0]), float(lineArr[1])])
     f.close()
-    f = open('Iris/train/y.txt')
+    f = open('./softmax/Iris/train/y.txt')
     label = []
     for line in f:
         lineArr = line.strip().split()
@@ -40,13 +40,13 @@ def loadTrainSet():
     return data1, label
 
 def loadTestSet():
-    f = open('Iris/test/x.txt')
+    f = open('./softmax/Iris/test/x.txt')
     data = []
     for line in f:
         lineArr = line.strip().split()
         data.append([float(lineArr[0]), float(lineArr[1])])
     f.close()
-    f = open('Iris/test/y.txt')
+    f = open('./softmax/Iris/test/y.txt')
     label = []
     for line in f:
         lineArr = line.strip().split()
