@@ -5,6 +5,8 @@ import chineseize_matplotlib
 import random
 
 
+plt.rcParams['axes.unicode_minus'] = False
+
 # 加载数据
 def load_data(path,m):
     data=np.loadtxt(path,dtype=float,ndmin=m)
@@ -19,7 +21,7 @@ class FNN:
         self.layer_nums=len(sizes) #获取网络层数
         self.sizes=sizes
         self.bayes=[np.random.rand(i,1) for i in sizes[1:]] #获取每层贝叶斯偏置
-        self.weights=[np.random.rand(i,j) for i,j in zip(sizes[1:],sizes[:-1])] #获取每一层的权重
+        self.weights=[np.random.rand(f,i,j) for i,j in zip(sizes[1:],sizes[:-1])] #获取每一层的权重
     
     # 定义激活函数，这里使用sigmoid
     def sigmoid(self,x):
@@ -39,7 +41,7 @@ if __name__ == '__main__':
     x2=load_data(x_path2,2)
     y1=load_data(y_path1,2)
     y2=load_data(y_path2,2)
-    print(x1.T)
+    print(x1)
     #print(y1.T)
     print(x1.shape)
     net=FNN([x1.shape[0],2,x1.shape[0]],x1.shape[1])
@@ -49,5 +51,11 @@ if __name__ == '__main__':
     print(net.weights)
     #print(net.weights[0])
     #print(np.random.randn(1,2,2))
+    tmp=np.matmul(net.weights[0],x1)
     print(np.matmul(net.weights[0],x1))
-    print(np.shape(np.matmul(net.weights[0],x1)))
+    print(np.shape(tmp))
+    print(type(tmp))
+    tmp1=np.sum(tmp,axis=2)
+    print(tmp1)
+    print(type(tmp1))
+    print(np.shape(tmp1))
