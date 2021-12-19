@@ -99,4 +99,4 @@ if __name__ == '__main__':
     print(tmp1)
     print(type(tmp1))
     print(np.shape(tmp1))'''
-    print(net.gd(iters=1,data=train_data1,alpha=0.001))
+    #print(net.gd(iters=1,data=train_data1,alpha=0.001))
