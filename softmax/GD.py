@@ -144,9 +144,9 @@ def plotBestFit(fig, data, label, theta, name, subplot):
     ax.scatter(xcord1, ycord1, s = 30, c = 'blue')
     ax.scatter(xcord2, ycord2, s = 30, c = 'red')
 
-    plotBoundary(theta[0, 0] - theta[0, 1], theta[1, 0] - theta[1, 1], theta[2,0] - theta[2, 1], "red-green")
-    plotBoundary(theta[0, 0] - theta[0, 2], theta[1, 0] - theta[1, 2], theta[2,0] - theta[2, 2], "red-blue")
-    plotBoundary(theta[0, 1] - theta[0, 2], theta[1, 1] - theta[1, 2], theta[2,1] - theta[2, 2], "green-blue")
+    plotBoundary(theta[0, 0] - theta[0, 1], theta[1, 0] - theta[1, 1], theta[2,0] - theta[2, 1], "red-blue")
+    plotBoundary(theta[0, 0] - theta[0, 2], theta[1, 0] - theta[1, 2], theta[2,0] - theta[2, 2], "green-blue")
+    plotBoundary(theta[0, 1] - theta[0, 2], theta[1, 1] - theta[1, 2], theta[2,1] - theta[2, 2], "red-green")
 
     
 
