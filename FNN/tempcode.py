@@ -16,7 +16,7 @@ def normalization(x):
 # 加载数据
 def load_data(path,m):
     data=np.loadtxt(path,dtype=float,ndmin=m)
-    data=normalization(data)
+    #data=normalization(data)
     return data
 
 # 定义神经网络的组成
@@ -49,7 +49,7 @@ class FNN:
 
     # 定义反馈更新函数
     def backforward(self):
-        
+        pass
     
     # 定义训练函数
     def train(self):
@@ -62,7 +62,9 @@ if __name__ == '__main__':
     y_path1='./FNN/Exam/train/y.txt'
     y_path2='./FNN/Iris/train/y.txt'
     x1=load_data(x_path1,2)
+    x1=normalization(x1)
     x2=load_data(x_path2,2)
+    x2=normalization(x2)
     y1=load_data(y_path1,2)
     y2=load_data(y_path2,2)
     train_data1=np.hstack([x1,y1])
@@ -72,7 +74,7 @@ if __name__ == '__main__':
     print(x1.shape)
     print(y1.shape)
     print(train_data1)
-    net=FNN([x1.shape[1],5,y1.shape[1]],x1,y1)
+    net=FNN([x1.shape[1],5,x1.shape[1]],x1,y1)
     print(net.layer_nums)
     print(net.sizes)
     print(net.bayes)
