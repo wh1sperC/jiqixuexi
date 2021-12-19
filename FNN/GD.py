@@ -39,19 +39,21 @@ class FNN:
             zs.append(z)
             active=self.sigmoid(z)
             actives.append(active)
-        delta=self.cost_derivative(actives[-1],y)*self.dsigmoid(zs[-1])
-        nabla_b[-1]=delta
-        nabla_w[-1]=np.dot(delta,actives[-2].T)
+            delta=self.cost_derivative(actives[-1],y)*self.dsigmoid(zs[-1])
+            nabla_b[-1]=delta
+            nabla_w[-1]=np.dot(delta,actives[-2])
         return nabla_b,nabla_w
     
     # 定义梯度下降函数
     def gd(self,iters,data,alpha):
-        nabla_b = [np.zeros(b.shape) for b in self.bayes]
-        nabla_w = [np.zeros(w.shape) for w in self.weights]
         for j in range(iters):
             random.shuffle(data)
-            for x,y in zip(data[:,-2],data[:,-1]):
+            '''print(data)
+            print(data[:,:-1])'''
+            for x,y in zip(data[:,:-1],data[:,-1]):
                 dnb,dnw=self.update(x,y)
+                nabla_b = [np.zeros(b.shape) for b in self.bayes]
+                nabla_w = [np.zeros(w.shape) for w in self.weights]
                 nabla_b=[nb+db for nb,db in zip(nabla_b,dnb)]
                 nabla_w=[nw+dw for nw,dw in zip(nabla_w,dnw)]
                 self.weights=[w-alpha*nw for w,nw in zip(self.weights,nabla_w)]
@@ -88,7 +90,7 @@ if __name__ == '__main__':
     print(net.bayes)
     print(net.weights)
     print(len(net.weights))
-    #print(np.random.randn(1,2,2))
+    #print(zip(train_data1[:,-2],train_data1[:,-1]))
     '''tmp=np.matmul(net.weights[0],x1)
     print(np.matmul(net.weights[0],x1))
     print(np.shape(tmp))
@@ -97,4 +99,4 @@ if __name__ == '__main__':
     print(tmp1)
     print(type(tmp1))
     print(np.shape(tmp1))'''
-    print(net.gd(iters=10,data=train_data1,alpha=0.001))
+    print(net.gd(iters=1,data=train_data1,alpha=0.001))
