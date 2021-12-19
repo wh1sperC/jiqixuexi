@@ -11,18 +11,16 @@ def normalization(x):
     return (x - mu) / sigma
 
 def loadDataSet():
-    f = open('./logistic/Exam/train/x.txt')
-    data = []
-    for line in f:
-        lineArr = line.strip().split()
-        data.append([float(lineArr[0]), float(lineArr[1])])
-    f.close()
-    f = open('./logistic/Exam/train/y.txt')
-    label = []
-    for line in f:
-        lineArr = line.strip().split()
-        label.append(int(float(lineArr[0])))
-    f.close()
+    with open('./logistic/Exam/train/x.txt') as f:
+        data = []
+        for line in f:
+            lineArr = line.strip().split()
+            data.append([float(lineArr[0]), float(lineArr[1])])
+    with open('./logistic/Exam/train/y.txt') as f:
+        label = []
+        for line in f:
+            lineArr = line.strip().split()
+            label.append(int(float(lineArr[0])))
     # data归一化 添加1
     data = normalization(data)
     data1 = []
@@ -33,42 +31,38 @@ def loadDataSet():
 def sigmoid(x):
     return 1.0 / (1 + exp(-x))
 
-def gradDescent(data, label):
-    dataMat = mat(data)
-    labelMat = mat(label).transpose()
-    n, m = shape(dataMat)  # n samples, m features
-    theta = mat([[1], [-1], [1]])
+def gd(data, label):
+    datas = mat(data)
+    labels = mat(label).transpose()
+    n= shape(datas)[0]  # n samples, m features
+    theta = mat([[4], [-3], [6]])
     alpha = 0.001
     maxCycle = 10000
     episilon = 0.01
-    h = sigmoid(dataMat * theta)
-    error = h - labelMat
-    precost = (-1) * (labelMat.transpose() * log(h) + (ones(
-            (n, 1)) - labelMat).transpose() * log(ones((n, 1)) - h))
+    h = sigmoid(datas * theta)
+    error = h - labels
+    precost = (-1) * (labels.transpose() * log(h) + (ones(
+            (n, 1)) - labels).transpose() * log(ones((n, 1)) - h))
     
     plt.ion()
     xs = [0, 0]
     ys = [0, precost[0, 0]]
     for k in range(maxCycle):
         
-        theta = theta + alpha * (dataMat.transpose() * (-error))
-        h = sigmoid(dataMat * theta)
-        error = h - labelMat
-        cost = (-1) * (labelMat.transpose() * log(h) + (ones(
-            (n, 1)) - labelMat).transpose() * log(ones((n, 1)) - h))
+        theta = theta + alpha * (datas.transpose() * (-error))
+        h = sigmoid(datas * theta)
+        error = h - labels
+        cost = (-1) * (labels.transpose() * log(h) + (ones(
+            (n, 1)) - labels).transpose() * log(ones((n, 1)) - h))
 
         xs[0] = xs[1]
         ys[0] = ys[1]
         xs[1] = k + 1
         ys[1] = cost[0, 0]
         fig = plt.figure(1)
-        
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            ax = plt.subplot(121)
-        
+        ax = plt.subplot(121)
         ax.set_title("cost", fontsize = 8)
-        ax.plot(xs, ys)
+        ax.plot(xs, ys,c='r')
         plotResult(data, label, theta, fig)
         plt.pause(0.01)
         if abs(precost - cost) < episilon:
@@ -92,12 +86,10 @@ def plotResult(data, label, theta, fig):
         else:
             xcord1.append(dataMat[i, 1])
             ycord1.append(dataMat[i, 2])
-    with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            ax = plt.subplot(122)
+    ax = plt.subplot(122)
     plt.cla()
-    ax.scatter(xcord0, ycord0, s=30, c='red', marker='s')
-    ax.scatter(xcord1, ycord1, s=30, c='green')
+    ax.scatter(xcord0, ycord0, s=30, c='b', marker='+')
+    ax.scatter(xcord1, ycord1, s=30, c='',marker='o',edgecolor='b')
     x_major_locator = MultipleLocator(1)
     y_major_locator = MultipleLocator(2)
     ax.xaxis.set_major_locator(x_major_locator)
@@ -107,13 +99,10 @@ def plotResult(data, label, theta, fig):
     x = arange(-3, 3, 0.1)
     y = (-theta[1, 0] * x - theta[0, 0]) / theta[2, 0]
     ax.plot(x, y)
-   
-def main():
+
+if __name__ == '__main__':
     data1, label = loadDataSet()
-    theta = gradDescent(data1, label)
+    theta = gd(data1, label)
     print(theta)
     plt.ioff()
     plt.show()
-
-if __name__ == '__main__':
-    main()
