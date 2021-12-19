@@ -8,9 +8,15 @@ import random
 plt.rcParams['axes.unicode_minus'] = False
 np.set_printoptions(precision=8)
 
+def normalization(x):
+    mu = np.mean(x, axis=0)
+    sigma = np.std(x, axis=0)
+    return (x - mu) / sigma
+
 # 加载数据
 def load_data(path,m):
     data=np.loadtxt(path,dtype=float,ndmin=m)
+    data=normalization(data)
     return data
 
 # 定义神经网络的组成
@@ -24,8 +30,10 @@ class FNN:
         self.data=data
         self.label=label
         self.hidden=[]
+        #self.bayes=[np.zeros((i,1)) for i in sizes[1:]]
         self.bayes=[np.random.rand(i,1) for i in sizes[1:]] #获取每层贝叶斯偏置
         self.weights=[np.random.rand(i,j) for i,j in zip(sizes[:-1],sizes[1:])] #获取每一层的权重
+        #self.weights=[np.zeros((i,j)) for i,j in zip(sizes[:-1],sizes[1:])]
     
     # 定义激活函数，这里使用sigmoid
     def sigmoid(self,x):
@@ -41,11 +49,11 @@ class FNN:
 
     # 定义反馈更新函数
     def backforward(self):
-        pass
+        
     
     # 定义训练函数
     def train(self):
-        print(np.around(self.feedforward(),8))
+        print(self.feedforward().astype(float))
         
 
 if __name__ == '__main__':
