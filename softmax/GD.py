@@ -21,37 +21,33 @@ def calError(h, label, type):
     return ans
 
 def loadTrainSet():
-    f = open('./softmax/Iris/train/x.txt')
-    data = []
-    for line in f:
-        lineArr = line.strip().split()
-        data.append([float(lineArr[0]), float(lineArr[1])])
-    f.close()
-    f = open('./softmax/Iris/train/y.txt')
-    label = []
-    for line in f:
-        lineArr = line.strip().split()
-        label.append(int(float(lineArr[0])))
-    f.close()
+    with open('./softmax/Iris/train/x.txt') as f:
+        data = []
+        for line in f:
+            lineArr = line.strip().split()
+            data.append([float(lineArr[0]), float(lineArr[1])])
+    with open('./softmax/Iris/train/y.txt') as f:
+        label = []
+        for line in f:
+            lineArr = line.strip().split()
+            label.append(int(float(lineArr[0])))
     data = normalization(data)
     data1 = []
     for i in data:
         data1.append([1, i[0], i[1]])
     return data1, label
 
-def loadTestSet():
-    f = open('./softmax/Iris/test/x.txt')
-    data = []
-    for line in f:
-        lineArr = line.strip().split()
-        data.append([float(lineArr[0]), float(lineArr[1])])
-    f.close()
-    f = open('./softmax/Iris/test/y.txt')
-    label = []
-    for line in f:
-        lineArr = line.strip().split()
-        label.append(int(float(lineArr[0])))
-    f.close()
+def loadTestSet(): 
+    with open('./softmax/Iris/test/x.txt') as f:
+        data = []
+        for line in f:
+            lineArr = line.strip().split()
+            data.append([float(lineArr[0]), float(lineArr[1])])
+    with open('./softmax/Iris/test/y.txt') as f:
+        label = []
+        for line in f:
+            lineArr = line.strip().split()
+            label.append(int(float(lineArr[0])))
     data = normalization(data)
     data1 = []
     for i in data:
@@ -102,8 +98,8 @@ def softmaxRegression(data, label):
 def stocSoftmaxRegression(data, label):
     dataMat = mat(data)
     labelMat = mat(label).transpose()
-    n, m = shape(dataMat)   # n samples, m features
-    theta = zeros((m, 4))   # m features, 3 tpyes + 1
+    n, m = shape(dataMat)
+    theta = zeros((m, 4))
     alpha = 0.001
     maxCycle = 50000
     episilon = 1e-7
@@ -114,7 +110,6 @@ def stocSoftmaxRegression(data, label):
         if abs(likelihood - preLikelihood) < episilon:
             break
         preLikelihood = likelihood
-        # choose one sample only
         rand = random.randint(0, n - 1)
         for i in range(shape(h)[1]):
             if labelMat[rand, 0] == i:
@@ -145,9 +140,9 @@ def plotBestFit(fig, data, label, theta, name, subplot):
     ax = fig.add_subplot(subplot)
     ax.set_title(name, fontsize=8)
     
-    ax.scatter(xcord0, ycord0, s = 30, c = 'red')
-    ax.scatter(xcord1, ycord1, s = 30, c = 'green')
-    ax.scatter(xcord2, ycord2, s = 30, c = 'blue')
+    ax.scatter(xcord0, ycord0, s = 30, c = 'green')
+    ax.scatter(xcord1, ycord1, s = 30, c = 'blue')
+    ax.scatter(xcord2, ycord2, s = 30, c = 'red')
 
     plotBoundary(theta[0, 0] - theta[0, 1], theta[1, 0] - theta[1, 1], theta[2,0] - theta[2, 1], "red-green")
     plotBoundary(theta[0, 0] - theta[0, 2], theta[1, 0] - theta[1, 2], theta[2,0] - theta[2, 2], "red-blue")
@@ -162,7 +157,7 @@ def plotBoundary(para0, para1, para2, name):
     plt.legend()
     
 
-def main():
+if __name__=='__main__':
     fig = plt.figure()
     data1, label = loadTrainSet()
     testdata, testlabel = loadTestSet()
@@ -201,7 +196,4 @@ def main():
     plotBestFit(fig, data1, label, theta2, "stocSoftmax, toTrainDataSet", 224)
 
     plt.show()
-
-if __name__=='__main__':
-    main()
 
