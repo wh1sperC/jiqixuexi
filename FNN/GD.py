@@ -111,5 +111,5 @@ def onehot_encode(x):
     return hat_x
     
 FNN=Network([train_x.shape[1],4,2],2,0.01)
-FNN.train(1000)
+FNN.train(100)
 
