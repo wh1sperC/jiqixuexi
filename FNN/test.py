@@ -5,7 +5,6 @@ import queue
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif']=['SimHei'] #显示中文标签
-plt.rcParams['axes.unicode_minus']=False
 class Node:#每个节点表示一个神经元，每个神经元包括对应的参数
     w=[]#权重参数
     dw=[]#每个参数下降的梯度
@@ -15,9 +14,9 @@ class Node:#每个节点表示一个神经元，每个神经元包括对应的�
     id=0#每个节点的ID
     pos=0#该神经元在所在层的第几个位置
 
-layers = [2,8,5,1]#定义4层的神经网络，第一层为输入层，8个特征，第2层4个神经元，第3层2个神经元，第4层为输出层，1个神经元
+layers = [2,8,5,2]#定义4层的神经网络，第一层为输入层，8个特征，第2层4个神经元，第3层2个神经元，第4层为输出层，1个神经元
 lr=0.01
-step=10000
+step=100#00
 
 
 node = []
@@ -27,10 +26,10 @@ id=0
 for i in range(1,len(layers)):
     for j in range(layers[i]):
         t = Node()
-        t.w = np.random.random(layers[i-1])#和上一层的数目对应
+        t.w = np.random.randn(layers[i-1])#和上一层的数目对应
         t.dw = np.zeros(layers[i-1])#初始化为0
         t.dwc=1
-        t.b = random.random()
+        t.b = np.random.randn()
         t.a = 0#输出
         t.id = id
         t.pos = j
@@ -49,9 +48,10 @@ for i in range(1,len(layers)-1):#连接节点关系
 
 
 def Sigmoid(z):#激活函数
-    return 1/(1+np.exp(-z))
+    return 1.0/(1.0+np.exp(-z))
+
 def tanh(z):
-    return (np.exp(z)-np.exp(-z))/(np.exp(z)+np.exp(-z))
+    return (np.exp(z)-np.exp(-z))/(np.exp(z)+np.exp(-z))+1
 
 def Loss(a,y):#损失函数
     return  -(y*np.log(a)+(1-y)*np.log(1-a))
@@ -63,7 +63,7 @@ def forward(x,y,node,layers):#前向传播
     for i in range(1,len(layers)):
         for j in range(layers[i]):
             pos = id + j
-            node[pos].a = tanh(node[pos].a + node[pos].b)
+            node[pos].a = Sigmoid(node[pos].a + node[pos].b)
             for k in range(len(to[id])):
                 v = to[id][k]
                 node[v].a += node[v].w[node[pos].pos]*node[pos].a
@@ -110,7 +110,7 @@ def Predict_function(x,node,layers):#预测函数
                     v = to[id][k]
                     node[v].a += node[v].w[node[pos].pos]*node[pos].a
             id += layers[i]
-        if node[np.sum(layers[1:])-1].a>=0.5:
+        if node[np.sum(layers[1:])-1].a>=0.5 and node[np.sum(layers[1:])-2].a>=0.5:
             return 1
         else:
             return 0
@@ -120,22 +120,30 @@ def Predict_function(x,node,layers):#预测函数
     return np.array(y_pred)
 
 N=layers[0]
-data=np.loadtxt('./FNN/Exam/train/x.txt',dtype=float,ndmin=2)
-label=np.loadtxt('./FNN/Exam/train/y.txt',dtype=float,ndmin=2)
-data=np.hstack([data,label])
-print(data)
+'''data=pd.read_csv('./FNN/diabetes.txt',header=None).values
 M=len(data)#数据集大小
-x=data[:,0:N]
+x=[:,0:N]
 x=x/(np.max(x)-np.min(x))
-y=data[:,-1]
-
-train_x=x
-train_y=y
+y=[:,-1]
+train_x=x[0:int(M*0.8)]
+train_y=y[0:int(M*0.8)]
 #按8：2划分训练集和验证集
-#test_x=np.loadtxt('./FNN/Exam/test/x.txt',dtype=float,ndmin=2)
-#test_y=np.loadtxt('./FNN/Exam/test/y.txt',dtype=float,ndmin=2)
-test_x=x
-test_y=y
+x[int(M*0.8):]
+y[int(M*0.8):]'''
+x=np.loadtxt('./FNN/Exam/train/x.txt',dtype=float,ndmin=2)
+y=np.loadtxt('./FNN/Exam/train/y.txt',dtype=float,ndmin=2)
+data=np.hstack([x,y])
+np.random.shuffle(data)
+print(data)
+train_x=data[:,0:N]
+train_y=data[:,-1]
+test_x=np.loadtxt('./FNN/Exam/test/x.txt',dtype=float,ndmin=2)
+test_y=np.loadtxt('./FNN/Exam/test/y.txt',dtype=float,ndmin=2)
+data2=np.hstack([test_x,test_y])
+np.random.shuffle(data2)
+print(data2)
+test_x=data2[:,0:layers[0]]
+test_y=data2[:,-1]
 cur_los=[]
 
 for index in range(step):
