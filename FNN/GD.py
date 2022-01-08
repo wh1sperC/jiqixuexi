@@ -20,7 +20,7 @@ def tanH(x):
 actfun=['tanh','tanh','sigmoid']
 lossfun='least_square'
 nodes=[2,7,6,3]
-layers=len(nodes)
+layer=len(nodes)
 alpha=0.01
 type=3
 epoches=2000 #训练次数
@@ -88,8 +88,8 @@ class Network(): # 神经网络类
     def __init__(self,layers,nodes,TYPE):
         if len(nodes)!=layers or layers==0: #先检查神经网络是否可构成
             raise Exception("Error layers or nodes")
-        self.layers=layers
-        self.nodes=nodes
+        self.layers=layers #网络层数
+        self.nodes=nodes #节点分布
         self.TYPE=TYPE #分类类数
         self.hidden_layers=[] # 隐藏层结果储存
         self.weights=[np.random.rand(x,y) for x,y in zip(nodes[:-1],nodes[1:])]
@@ -101,21 +101,17 @@ class Network(): # 神经网络类
         for i in range(self.layers-1):
             x=np.dot(x,self.weights[i])+self.bayes[i]
             if actfun[i]=='tanh':
-                #output=tanH(x)
                 x=tanH(x)
             if actfun[i]=='sigmoid':
-                #output=sigmoid(x)
                 x=sigmoid(x)
-            #self.hidden_layers.append(output)
             self.hidden_layers.append(x)
-        #return output #得到最后的输出结果
-        return x
+        return x #得到最后的输出结果
 
-    def backward(self,label):
+    def backward(self,label): # 反向更新参数
         errors=[]
         nodes=self.nodes
         n=1
-        idx=self.hidden_layers[layers-2]
+        idx=self.hidden_layers[self.layers-2]
         idy=self.hidden_layers[-1]
         if lossfun=='least_square':
             error_last=idy[0]-label
@@ -123,87 +119,71 @@ class Network(): # 神经网络类
             error_last=-label/idy[0]
         weight=np.ones((nodes[-1],1))
         error=np.zeros(nodes[-1])
-        for j in range(nodes[-1]):
-            for l in range(n):
-                error[j]+=error_last[j]*weight[j][l]*idy[0][j]*(1-idy[0][j])
+        for i in range(nodes[-1]): #输出层误差
+            for j in range(n):
+                error[i]+=error_last[i]*weight[i][j]*idy[0][i]*(1-idy[0][i])
         errors.append(error)
 
-        for i in range(layers-2):
-            idx=self.hidden_layers[layers-3-i]
-            idy=self.hidden_layers[layers-2-i]
-            n=nodes[layers-1-i]
+        for i in range(self.layers-2): # 隐藏层误差
+            idx=self.hidden_layers[self.layers-3-i]
+            idy=self.hidden_layers[self.layers-2-i]
+            n=nodes[self.layers-1-i]
             error_last=error
-            error=np.zeros(nodes[layers-2-i])
-            weight=self.weights[layers-2-i]
-            for j in range(nodes[layers-2-i]):
-                for l in range(n):
-                    error[j]+=error_last[l]*weight[j][l]*idy[0][j]*(1-idy[0][j])
-
+            error=np.zeros(nodes[self.layers-2-i])
+            weight=self.weights[self.layers-2-i]
+            for j in range(nodes[self.layers-2-i]):
+                for k in range(n):
+                    error[j]+=error_last[k]*weight[j][k]*idy[0][j]*(1-idy[0][j])
             errors.append(error)
        
-        for i in range(layers-1):
-            idx=self.hidden_layers[layers-2-i]
-            idy=self.hidden_layers[layers-1-i]
-            self.weights[layers-2-i]-=np.dot(idx.T.reshape(nodes[layers-2-i],1),errors[i].reshape((1,nodes[layers-1-i])))*alpha
-            self.bayes[layers-2-i]-=errors[i]*alpha
+        for i in range(self.layers-1): #参数更新
+            idx=self.hidden_layers[self.layers-2-i]
+            idy=self.hidden_layers[self.layers-1-i]
+            self.weights[self.layers-2-i]-=np.dot(idx.T.reshape(nodes[self.layers-2-i],1),errors[i].reshape((1,nodes[self.layers-1-i])))*alpha
+            self.bayes[self.layers-2-i]-=errors[i]*alpha
     
-    def train(self):
+    def train(self): #训练
         lost=[]
         xlabel=[]
         for epoch in range(epoches):
             loss=0
-            for k in range(train_x.shape[0]):
-                hat_x=self.feedforward(train_x[k])
-                self.backward(labels[k])
+            for i in range(train_x.shape[0]):
+                hatx=self.feedforward(train_x[i])
+                self.backward(labels[i])
                 self.hidden_layers.clear()
                 if lossfun=='least_square':
-                    loss+=least_square(hat_x,labels[k])
+                    loss+=least_square(hatx,labels[i])
                 if lossfun=='cross_entropy':
-                    loss-=cross_entropy(hat_x,labels[k])
-            
+                    loss-=cross_entropy(hatx,labels[i])
             lost.append(loss)
             xlabel.append(epoch)
-            if (epoch+1)%50 == 0:
+            if (epoch+1)%100 == 0:
                 print("epoch {}:loss:{:.6f}".format(epoch+1,loss))
                 plt.clf()
                 plt.figure(1)
-                plt.plot(xlabel,lost)
+                plt.plot(xlabel,lost,c='r')
                 plt.pause(0.01)
                 plt.ioff()
 
-    def test(self):
-        hat_x=[]
-        for k in range(test_x.shape[0]):
-            x=test_x[k]
-            for i in range(layers-1):
-                x=np.dot(x,self.weights[i])+self.bayes[i]
-                if actfun[i]=='tanh':
+    def test(self): #测试
+        hatx=[]
+        for i in range(test_x.shape[0]):
+            x=test_x[i]
+            for j in range(self.layers-1):
+                x=np.dot(x,self.weights[j])+self.bayes[j]
+                if actfun[j]=='tanh':
                     x=tanH(x)
-                if actfun[i]=='sigmoid':
+                if actfun[j]=='sigmoid':
                     x=sigmoid(x)
-            hat_x.append(x)
-        print(hat_x)
-        hat_x=onehot_encode(np.array(hat_x))
+            hatx.append(x)
+        #print(hatx)
+        hatx=onehot_encode(np.array(hatx))
         print("predict:")
-        print(hat_x)
+        print(hatx)
         print(test_y)
-        print("accuracy:{:.4f}".format(accuracy(hat_x,test_y)))
+        print("accuracy:{:.4f}".format(accuracy(hatx,test_y)))
 
-    def predict(self,X,Y):
-        z=[]
-        ninput=[]
-        for i in range(300):
-            for j in range(300):
-                ninput.append([X[i][j],Y[i][j]])
-        ninput=np.array(ninput).reshape((90000,2))
-        for k in range(layers-1):
-            ninput=np.dot(ninput,self.weights[k])+self.bayes[k]
-        hat_x=onehot_encode(ninput).reshape(300,300)
-        return hat_x
-        
-
-
-
-FNN=Network(layers,nodes,type)
+#建立一个神经网络对象并实现训练和测试
+FNN=Network(layer,nodes,type)
 FNN.train()
 FNN.test()
