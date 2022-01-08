@@ -12,23 +12,23 @@ def normalization(x):
     return x
 
 def sigmoid(x):
-    return 1/(1+exp(-x))
+    return 1.0/(1.0+np.exp(-x))
 
 def tanH(x):
-    return (exp(x)-exp(-x))/(exp(x)+exp(-x))
+    return (np.exp(x)-np.exp(-x))/(np.exp(x)+np.exp(-x))
 
-actfun=['tanh','sigmoid','sigmoid']
+actfun=['tanh','tanh','sigmoid']
 lossfun='least_square'
-nodes=[2,6,4,2]
+nodes=[2,7,6,3]
 layers=len(nodes)
 alpha=0.01
-type=2
+type=3
 epoches=2000 #训练次数
 
-train_x=np.loadtxt("./FNN/Exam/train/x.txt",dtype=float,ndmin=2)
-train_y=np.loadtxt("./FNN/Exam/train/y.txt",dtype=float,ndmin=2)
-test_x=np.loadtxt("./FNN/Exam/test/x.txt",dtype=float,ndmin=2)
-test_y=np.loadtxt("./FNN/Exam/test/y.txt",dtype=float,ndmin=2)
+train_x=np.loadtxt("./FNN/Iris/train/x.txt",dtype=float,ndmin=2)
+train_y=np.loadtxt("./FNN/Iris/train/y.txt",dtype=float,ndmin=2)
+test_x=np.loadtxt("./FNN/Iris/test/x.txt",dtype=float,ndmin=2)
+test_y=np.loadtxt("./FNN/Iris/test/y.txt",dtype=float,ndmin=2)
 train_x=normalization(train_x.T).T
 test_x=normalization(test_x.T).T
 plt.rcParams['font.family'] = 'SimHei'
@@ -37,45 +37,46 @@ fig = plt.figure(facecolor = 'lightgrey')
 
 M=train_x.shape[0] #训练集规模
 
+#存放坐标分类
 x_0=[];y_0=[]
 x_1=[];y_1=[]
 x_2=[];y_2=[]
 for j in range(M):
-    if train_y[j]==0:
-        x_0.append(train_x[j][0])
-        y_0.append(train_x[j][1])
-    elif train_y[j]==1:
+    if train_y[j]==1:
         x_1.append(train_x[j][0])
         y_1.append(train_x[j][1])
-    else:
+    elif train_y[j]==2:
         x_2.append(train_x[j][0])
         y_2.append(train_x[j][1])
+    else:
+        x_0.append(train_x[j][0])
+        y_0.append(train_x[j][1])
 
-labels=zeros((train_x.shape[0],type))
-for k in range(train_x.shape[0]):
-    labels[k][int(train_y[k])]=1
+#对标签进行处理
+labels=np.zeros((train_x.shape[0],type))
+for i in range(train_x.shape[0]):
+    labels[i][int(train_y[i])]=1
 
-def least_square(hat_x,label):
+def least_square(hatx,label): # 最小二乘估计
     loss=0
     for i in range(label.shape[0]):
-        loss+=((hat_x[0][i]-label[i])**2)/2
+        loss+=((hatx[0][i]-label[i])**2)/2
     return loss
 
-def cross_entropy(hat_x,label):
+def cross_entropy(hatx,label): # 交叉熵损失
     loss=0
     for i in range(label.shape[0]):
-        loss+=label[i]*log(hat_x[0][i])
+        loss+=label[i]*np.log(hatx[0][i])
     return loss
 
-
-def onehot_encode(x):
+def onehot_encode(x): # 神经网络输出层的独热码翻译
     n=x.shape[0]
-    hat_x=np.zeros(n)
+    hatx=np.zeros(n)
     for i in range(n):
-        hat_x[i]=argmax(x[i][0])
-    return hat_x
+        hatx[i]=argmax(x[i][0])
+    return hatx
 
-def accuracy(hat_x,label):
+def accuracy(hat_x,label): # 模型预测准确率
     num=0
     N=hat_x.shape[0]
     for i in range(N):
@@ -83,29 +84,32 @@ def accuracy(hat_x,label):
             num+=1
     return num/N
 
-class Network():
+class Network(): # 神经网络类
     def __init__(self,layers,nodes,TYPE):
-        if len(nodes)!=layers or layers==0:
-            raise Exception("error layers or nodes")
+        if len(nodes)!=layers or layers==0: #先检查神经网络是否可构成
+            raise Exception("Error layers or nodes")
         self.layers=layers
         self.nodes=nodes
-        self.TYPE=TYPE
-        self.hidden_layers=[]
-        self.weights=[np.random.rand(x,y) for x,y,i in zip(nodes[:-1],nodes[1:],range(0,layers,1))]
-        self.bayes=[np.zeros((1,y)) for y in nodes[1:]]
+        self.TYPE=TYPE #分类类数
+        self.hidden_layers=[] # 隐藏层结果储存
+        self.weights=[np.random.rand(x,y) for x,y in zip(nodes[:-1],nodes[1:])]
+        self.bayes=[np.zeros((1,y)) for y in nodes[1:]] #权重和贝叶斯偏置
 
-        
-    def feedforward(self,idx):
+    def feedforward(self,idx): #前向传播
         x=idx
         self.hidden_layers.append(x)
         for i in range(self.layers-1):
             x=np.dot(x,self.weights[i])+self.bayes[i]
             if actfun[i]=='tanh':
-                noutput=tanH(x)
+                #output=tanH(x)
+                x=tanH(x)
             if actfun[i]=='sigmoid':
-                noutput=sigmoid(x)
-            self.hidden_layers.append(noutput)
-        return noutput
+                #output=sigmoid(x)
+                x=sigmoid(x)
+            #self.hidden_layers.append(output)
+            self.hidden_layers.append(x)
+        #return output #得到最后的输出结果
+        return x
 
     def backward(self,label):
         errors=[]
