@@ -17,7 +17,10 @@ def sigmoid(x):
 def tanH(x):
     return (np.exp(x)-np.exp(-x))/(np.exp(x)+np.exp(-x))
 
-actfun=['tanh','tanh','sigmoid']
+def softmax(x):
+    return np.exp(x)/np.sum(np.exp(x),axis=1)
+
+actfun=['tanh','sigmoid','softmax']
 lossfun='least_square'
 nodes=[2,7,6,3]
 layer=len(nodes)
@@ -53,8 +56,8 @@ for j in range(M):
         y_0.append(train_x[j][1])
 
 #对标签进行处理
-labels=np.zeros((train_x.shape[0],type))
-for i in range(train_x.shape[0]):
+labels=np.zeros((M,type))
+for i in range(M):
     labels[i][int(train_y[i])]=1
 
 def least_square(hatx,label): # 最小二乘估计
@@ -104,6 +107,8 @@ class Network(): # 神经网络类
                 x=tanH(x)
             if actfun[i]=='sigmoid':
                 x=sigmoid(x)
+            if actfun[i]=='softmax':
+                x=softmax(x)
             self.hidden_layers.append(x)
         return x #得到最后的输出结果
 
@@ -162,7 +167,7 @@ class Network(): # 神经网络类
                 plt.clf()
                 plt.figure(1)
                 plt.plot(xlabel,lost,c='r')
-                plt.pause(0.01)
+                plt.pause(0.001)
                 plt.ioff()
 
     def test(self): #测试
@@ -175,15 +180,21 @@ class Network(): # 神经网络类
                     x=tanH(x)
                 if actfun[j]=='sigmoid':
                     x=sigmoid(x)
+                if actfun[j]=='softmax':
+                    x=softmax(x)
             hatx.append(x)
         #print(hatx)
         hatx=onehot_encode(np.array(hatx))
         print("predict:")
         print(hatx)
         print(test_y)
-        print("accuracy:{:.4f}".format(accuracy(hatx,test_y)))
+        print("accuracy:{:.6f}".format(accuracy(hatx,test_y)))
+        return hatx
 
 #建立一个神经网络对象并实现训练和测试
 FNN=Network(layer,nodes,type)
 FNN.train()
-FNN.test()
+pre_y=FNN.test()
+
+#plt.scatter(test_x[:,0],test_x[:,1])
+
