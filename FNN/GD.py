@@ -1,9 +1,10 @@
+from typing import final
 import numpy as np
 from numpy import *
 import matplotlib.pyplot as plt
 
 
-def normalization(x):
+def normalization(x): #数据归一化处理
     for i in range(x.shape[0]):
         max_num=max(x[i])
         min_num=min(x[i])
@@ -11,13 +12,13 @@ def normalization(x):
             x[i][j]=(x[i][j]-min_num)/(max_num-min_num)
     return x
 
-def sigmoid(x):
+def sigmoid(x): # sigmoid函数
     return 1.0/(1.0+np.exp(-x))
 
-def tanH(x):
+def tanH(x):#tanh函数
     return (np.exp(x)-np.exp(-x))/(np.exp(x)+np.exp(-x))
 
-def softmax(x):
+def softmax(x):#softmax函数，这里用作最后输出的激活函数处理
     return np.exp(x)/np.sum(np.exp(x),axis=1)
 
 actfun=['tanh','sigmoid','softmax']
@@ -25,18 +26,20 @@ lossfun='least_square'
 nodes=[2,7,6,3]
 layer=len(nodes)
 alpha=0.01
-type=3
-epoches=2000 #训练次数
+type=nodes[-1]
+epoches=10000 #训练次数
 
-train_x=np.loadtxt("./FNN/Iris/train/x.txt",dtype=float,ndmin=2)
-train_y=np.loadtxt("./FNN/Iris/train/y.txt",dtype=float,ndmin=2)
-test_x=np.loadtxt("./FNN/Iris/test/x.txt",dtype=float,ndmin=2)
-test_y=np.loadtxt("./FNN/Iris/test/y.txt",dtype=float,ndmin=2)
+#导入数据
+dataset='Iris'
+train_x=np.loadtxt("./FNN/{}/train/x.txt".format(dataset),dtype=float,ndmin=2)
+train_y=np.loadtxt("./FNN/{}/train/y.txt".format(dataset),dtype=float,ndmin=2)
+test_x=np.loadtxt("./FNN/{}/test/x.txt".format(dataset),dtype=float,ndmin=2)
+test_y=np.loadtxt("./FNN/{}/test/y.txt".format(dataset),dtype=float,ndmin=2)
 train_x=normalization(train_x.T).T
 test_x=normalization(test_x.T).T
 plt.rcParams['font.family'] = 'SimHei'
 plt.rcParams['axes.unicode_minus']=False
-fig = plt.figure(facecolor = 'lightgrey')
+fig = plt.figure(facecolor = 'lightgrey',figsize=[3*5,1*5])
 
 M=train_x.shape[0] #训练集规模
 
@@ -54,6 +57,25 @@ for j in range(M):
     else:
         x_0.append(train_x[j][0])
         y_0.append(train_x[j][1])
+
+def plotboundry(p0,p1,p2,name):
+    x=arange(0,1,0.1)
+    y=(-p1*x-p0)/p2
+    plt.plot(x,y,label=name)
+    plt.legend()
+
+def plot1(theta):
+    plt.scatter(x_0,y_0,s=30,c='',marker='o',edgecolors='b')
+    plt.scatter(x_1,y_1,s=30,c='b',marker='+')
+    plotboundry(theta[0,1]-theta[0,0], theta[1, 1] - theta[1, 0], theta[2,1] - theta[2, 0], "o-+")
+
+def plot2(theta):
+    plt.scatter(x_0,y_0,s=30,c='',marker='o',edgecolors='k')
+    plt.scatter(x_1,y_1,s=30,c='k',marker='+')
+    plt.scatter(x_2,y_2,s=30,c='k',marker='*')
+    plotboundry(theta[0, 1] - theta[0, 0], theta[1, 1] - theta[1, 0], theta[2,1] - theta[2, 0], "o-+")
+    plotboundry(theta[0, 2] - theta[0, 0], theta[1, 2] - theta[1, 0], theta[2,2] - theta[2, 0], "o-*")
+    plotboundry(theta[0, 2] - theta[0, 1], theta[1, 2] - theta[1, 1], theta[2,2] - theta[2, 1], "+-*")
 
 #对标签进行处理
 labels=np.zeros((M,type))
@@ -79,11 +101,11 @@ def onehot_encode(x): # 神经网络输出层的独热码翻译
         hatx[i]=argmax(x[i][0])
     return hatx
 
-def accuracy(hat_x,label): # 模型预测准确率
+def accuracy(hatx,label): # 模型预测准确率
     num=0
-    N=hat_x.shape[0]
+    N=hatx.shape[0]
     for i in range(N):
-        if hat_x[i]==label[i]:
+        if hatx[i]==label[i]:
             num+=1
     return num/N
 
@@ -150,8 +172,10 @@ class Network(): # 神经网络类
     def train(self): #训练
         lost=[]
         xlabel=[]
+        acc=[]
         for epoch in range(epoches):
             loss=0
+            px=[]
             for i in range(train_x.shape[0]):
                 hatx=self.feedforward(train_x[i])
                 self.backward(labels[i])
@@ -160,15 +184,37 @@ class Network(): # 神经网络类
                     loss+=least_square(hatx,labels[i])
                 if lossfun=='cross_entropy':
                     loss-=cross_entropy(hatx,labels[i])
+                px.append(hatx)
+            px=onehot_encode(np.array(px))
+            #print(px)
+            a=accuracy(px,train_y)
+            acc.append(a)
             lost.append(loss)
             xlabel.append(epoch)
             if (epoch+1)%100 == 0:
                 print("epoch {}:loss:{:.6f}".format(epoch+1,loss))
                 plt.clf()
                 plt.figure(1)
+                plt.subplot(131)
+                plt.title('loss')
                 plt.plot(xlabel,lost,c='r')
+                plt.subplot(132)
+                plt.title('accuracy')
+                plt.plot(xlabel,acc,c='b')
+                plt.subplot(133)
+                if self.nodes[-1]==2:
+                    temp1=np.dot(self.bayes[0],self.weights[1])+self.bayes[1]
+                    temp2=np.dot(self.weights[0],self.weights[1])
+                    theta=np.append(temp1,temp2,axis=0)
+                    plot1(theta)
+                if self.nodes[-1]==3:
+                    temp1=self.bayes[0]@self.weights[1]@self.weights[2]+self.bayes[1]@self.weights[2]+self.bayes[2]
+                    temp2=self.weights[0]@self.weights[1]@self.weights[2]
+                    theta=np.append(temp1,temp2,axis=0)
+                    plot2(theta)
                 plt.pause(0.001)
                 plt.ioff()
+        plt.show()
 
     def test(self): #测试
         hatx=[]
@@ -195,6 +241,10 @@ class Network(): # 神经网络类
 FNN=Network(layer,nodes,type)
 FNN.train()
 pre_y=FNN.test()
+print('final weight:')
+print(FNN.weights)
+print('final bayes:')
+print(FNN.bayes)
 
-#plt.scatter(test_x[:,0],test_x[:,1])
+
 
