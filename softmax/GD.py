@@ -73,27 +73,7 @@ def calLikelihood(h, labelMat):
         ans = ans + log(h[i, labelMat[i, 0]])
     return ans
 
-def softmaxRegression(data, label):
-    dataMat = mat(data)
-    labelMat = mat(label).transpose()
-    n, m = shape(dataMat)   # n samples, m features
-    theta = zeros((m, 4))   # m features, 3 tpyes + 1
-    alpha = 0.001
-    maxCycle = 10000
-    episilon = 0.0005
-    preLikelihood = 0.0
-    for k in range(maxCycle):
-        h = softmax(dataMat * theta)
-        likelihood = calLikelihood(h, labelMat)
-        if abs(likelihood - preLikelihood) < episilon:
-            break
-        preLikelihood = likelihood
-        for i in range(shape(h)[1]):
-            delta = alpha * dataMat.transpose() * calError(h, labelMat, i)
-
-            theta[:, i] = theta[:, i] + delta.transpose()
-    print(k)
-    return theta         
+         
 
 def stocSoftmaxRegression(data, label):
     dataMat = mat(data)
@@ -158,26 +138,10 @@ def plotBoundary(para0, para1, para2, name):
     
 
 if __name__=='__main__':
-    fig = plt.figure()
+    fig = plt.figure(figsize=[5*2,5*1])
     data1, label = loadTrainSet()
     testdata, testlabel = loadTestSet()
-    print("SoftmaxRegression:")
-    print("theta:")
-    theta1 = softmaxRegression(data1, label)
-    print(theta1)
-
-    print("to TestDataSet:")    
-    predictlabel1 = getTestPredict(theta1, testdata)
-    print("accuracy:")
-    print(getCorrectRate(predictlabel1, mat(testlabel).transpose()))
-    plotBestFit(fig, testdata, testlabel, theta1, "Softmax, ToTestDataSet", 221)
-
-    print("to TrainDataSet:")    
-    predictlabel2 = getTestPredict(theta1, data1)
-    print("accuracy:")
-    print(getCorrectRate(predictlabel2, mat(label).transpose()))
-    plotBestFit(fig, data1, label, theta1, "Softmax, ToTrainDataSet", 222)
-
+    
     print("stocSoftmaxRegression:")
     print("theta")
     theta2 = stocSoftmaxRegression(data1, label)
@@ -187,13 +151,13 @@ if __name__=='__main__':
     predictlabel1 = getTestPredict(theta2, testdata)
     print("accuracy:")
     print(getCorrectRate(predictlabel1, mat(testlabel).transpose()))
-    plotBestFit(fig, testdata, testlabel, theta2, "stocSoftmax, ToTestDataSet", 223)
+    plotBestFit(fig, testdata, testlabel, theta2, "stocSoftmax, ToTestDataSet", 122)
 
     print("to TrainDataSet:")    
     predictlabel2 = getTestPredict(theta2, data1)
     print("accuracy:")
     print(getCorrectRate(predictlabel2, mat(label).transpose()))
-    plotBestFit(fig, data1, label, theta2, "stocSoftmax, toTrainDataSet", 224)
+    plotBestFit(fig, data1, label, theta2, "stocSoftmax, toTrainDataSet", 121)
 
     plt.show()
 
