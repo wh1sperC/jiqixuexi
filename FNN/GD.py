@@ -239,7 +239,7 @@ class Network(): # 神经网络类
 #建立一个神经网络对象并实现训练和测试
 FNN=Network(layer,nodes,type)
 FNN.train()
-pre_y=FNN.test()
+FNN.test()
 print('final weight:')
 print(FNN.weights)
 print('final bayes:')
