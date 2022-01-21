@@ -69,7 +69,7 @@ def plot1(theta):
     plotboundry(theta[0,1]-theta[0,0], theta[1, 1] - theta[1, 0], theta[2,1] - theta[2, 0], "o-+")
 
 def plot2(theta):
-    plt.scatter(x_0,y_0,s=30,c='',marker='o',edgecolors='k')
+    plt.scatter(x_0,y_0,s=30,marker='o',edgecolors='k')
     plt.scatter(x_1,y_1,s=30,c='k',marker='+')
     plt.scatter(x_2,y_2,s=30,c='k',marker='*')
     plotboundry(theta[0, 1] - theta[0, 0], theta[1, 1] - theta[1, 0], theta[2,1] - theta[2, 0], "o-+")
