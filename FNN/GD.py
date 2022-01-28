@@ -21,7 +21,7 @@ def softmax(x):#softmax函数，这里用作最后输出的激活函数处理
     return np.exp(x)/np.sum(np.exp(x),axis=1)
 
 actfun=['tanh','sigmoid','softmax']
-lossfun='least_square'
+lossfun='least_square' #'cross_entropy'
 nodes=[2,7,6,3]
 layer=len(nodes)
 alpha=0.01
