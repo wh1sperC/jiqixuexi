@@ -31,7 +31,10 @@ type=nodes[-1]
 epoches=2000 #训练次数
 
 #导入数据
-dataset='Iris'
+if type==3:
+    dataset='Iris'
+elif type==2:
+    dataset='Exam'
 train_x=np.loadtxt("./FNN/{}/train/x.txt".format(dataset),dtype=float,ndmin=2)
 train_y=np.loadtxt("./FNN/{}/train/y.txt".format(dataset),dtype=float,ndmin=2)
 test_x=np.loadtxt("./FNN/{}/test/x.txt".format(dataset),dtype=float,ndmin=2)
