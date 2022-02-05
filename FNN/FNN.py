@@ -88,7 +88,7 @@ class Network(): # 神经网络类
         self.TYPE=TYPE #分类类数
         self.hidden_layers=[] # 隐藏层结果储存
         self.weights=[np.random.rand(x,y) for x,y in zip(nodes[:-1],nodes[1:])]
-        self.bayes=[np.zeros((1,y)) for y in nodes[1:]] #权重和贝叶斯偏置
+        self.bayes=[np.random.rand(1,y) for y in nodes[1:]] #权重和贝叶斯偏置
 
     def feedforward(self,idx): #前向传播
         x=idx
