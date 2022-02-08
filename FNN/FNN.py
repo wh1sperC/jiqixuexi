@@ -162,7 +162,7 @@ class Network(): # 神经网络类
             lost.append(loss)
             xlabel.append(epoch)
             if (epoch+1)%100 == 0:
-                print("epoch {}:loss:{:.6f}".format(epoch+1,loss))
+                print("epoch {}:loss:{:.6f},accuracy:{:.6f}".format(epoch+1,loss,a))
                 self.plotBestFit(train_x,train_y,lost,xlabel,acc)
         plt.show()
 
