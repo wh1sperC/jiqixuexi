@@ -43,7 +43,7 @@ train_x=normalization(train_x.T).T
 test_x=normalization(test_x.T).T
 plt.rcParams['font.family'] = 'SimHei'
 plt.rcParams['axes.unicode_minus']=False
-fig = plt.figure(facecolor = 'lightgrey',figsize=[3*5,1*5])
+fig = plt.figure(facecolor = 'lightgrey',figsize=[3*6,1*6])
 
 M=train_x.shape[0] #训练集规模
 
@@ -209,8 +209,8 @@ class Network(): # 神经网络类
         plt.title('accuracy')
         plt.plot(xlabel,acc,c='b')
         plt.subplot(133)
-        cl_bg=ListedColormap(['g','r','b'])
-        cl_pt=ListedColormap(['k','purple','y'])
+        cl_bg=ListedColormap(['g','r','b'])#['g','r','b']
+        cl_pt=ListedColormap(['g','r','b'])#['k','purple','y']
         plt.xlim(x1_min,x1_max)
         plt.ylim(x2_min,x2_max)
         plt.pcolormesh(x1,x2,y_predict.reshape(x1.shape),cmap=cl_bg,shading='auto')
