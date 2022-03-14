@@ -43,7 +43,7 @@ train_x=normalization(train_x.T).T
 test_x=normalization(test_x.T).T
 plt.rcParams['font.family'] = 'SimHei'
 plt.rcParams['axes.unicode_minus']=False
-fig = plt.figure(facecolor = 'lightgrey',figsize=[3*6,1*6])
+fig = plt.figure(facecolor = 'lightgrey',figsize=[3*5,1*5])
 
 M=train_x.shape[0] #训练集规模
 
