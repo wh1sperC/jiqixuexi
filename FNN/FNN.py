@@ -1,14 +1,13 @@
 from matplotlib.colors import ListedColormap
 import numpy as np
-from numpy import *
 import matplotlib.pyplot as plt
 
 
 
 def normalization(x): #数据归一化处理
     for i in range(x.shape[0]):
-        max_num=max(x[i])
-        min_num=min(x[i])
+        max_num=np.max(x[i])
+        min_num=np.min(x[i])
         for j in range(x.shape[1]):
             x[i][j]=(x[i][j]-min_num)/(max_num-min_num)
     return x
@@ -68,7 +67,7 @@ def onehot_encode(x): # 神经网络输出层的独热码翻译
     n=x.shape[0]
     hatx=np.zeros(n)
     for i in range(n):
-        hatx[i]=argmax(x[i][0])
+        hatx[i]=np.argmax(x[i][0])
     return hatx
 
 def accuracy(hatx,label): # 模型预测准确率
@@ -227,6 +226,3 @@ print('final weight:')
 print(FNN.weights)
 print('final bayes:')
 print(FNN.bayes)
-
-
-
