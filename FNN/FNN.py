@@ -21,9 +21,9 @@ def tanH(x):#tanh函数
 def softmax(x):#softmax函数，这里用作最后输出的激活函数处理
     return np.exp(x)/np.sum(np.exp(x),axis=1)
 
-actfun=['sigmoid','sigmoid','softmax']
+actfun=['sigmoid','sigmoid','softmax'] #'sigmoid',
 lossfun='least_square' #'cross_entropy'
-nodes=[2,3,6,3]
+nodes=[2,3,6,3] #
 layer=len(nodes)
 alpha=0.01
 type=nodes[-1]
@@ -135,7 +135,8 @@ class Network(): # 神经网络类
         for i in range(self.layers-1): #参数更新
             idx=self.hidden_layers[self.layers-2-i]
             idy=self.hidden_layers[self.layers-1-i]
-            self.weights[self.layers-2-i]-=np.dot(idx.T.reshape(nodes[self.layers-2-i],1),errors[i].reshape((1,nodes[self.layers-1-i])))*alpha
+            self.weights[self.layers-2-i]-=np.dot(idx.T.reshape(nodes[self.layers-2-i],1),
+                                                  errors[i].reshape((1,nodes[self.layers-1-i])))*alpha
             self.bayes[self.layers-2-i]-=errors[i]*alpha
     
     def train(self): #训练
@@ -182,7 +183,9 @@ class Network(): # 神经网络类
         hatx=onehot_encode(np.array(hatx))
         print("predict:")
         print(hatx)
+        print("real:")
         print(test_y)
+        print("alpha:{:.6f}".format(alpha))
         print("accuracy:{:.6f}".format(accuracy(hatx,test_y)))
         return hatx
     
@@ -222,7 +225,7 @@ class Network(): # 神经网络类
 FNN=Network(layer,nodes,type)
 FNN.train()
 FNN.test()
-print('final weight:')
-print(FNN.weights)
-print('final bayes:')
-print(FNN.bayes)
+#print('final weight:')
+#print(FNN.weights)
+#print('final bayes:')
+#print(FNN.bayes)
